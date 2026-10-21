@@ -1,50 +1,17 @@
-#include "Logger.h"
+#pragma once
 
-#include <fstream>
-#include <iomanip>
-#include <chrono>
-#include <mutex>
-#include <sstream>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 
-namespace {
-    std::mutex g_log_mutex;
-    std::ofstream g_log_file;
-}
+#include <winsock2.h>
+#include <string>
 
-void Logger::Init(const std::string& file) {
-    g_log_file.open(file, std::ios::out | std::ios::app);
-}
-
-void Logger::Info(const std::string& msg) {
-    std::lock_guard<std::mutex> lock(g_log_mutex);
-    std::cout << "[INFO] " << msg << std::endl;
-    if (g_log_file.is_open()) {
-        g_log_file << "[INFO] " << msg << std::endl;
-        g_log_file.flush();
-    }
-}
-
-void Logger::Warn(const std::string& msg) {
-    std::lock_guard<std::mutex> lock(g_log_mutex);
-    std::cout << "[WARN] " << msg << std::endl;
-    if (g_log_file.is_open()) {
-        g_log_file << "[WARN] " << msg << std::endl;
-        g_log_file.flush();
-    }
-}
-
-void Logger::Error(const std::string& msg) {
-    std::lock_guard<std::mutex> lock(g_log_mutex);
-    std::cout << "[ERROR] " << msg << std::endl;
-    if (g_log_file.is_open()) {
-        g_log_file << "[ERROR] " << msg << std::endl;
-        g_log_file.flush();
-    }
-}
-
-void Logger::Close() {
-    std::lock_guard<std::mutex> lock(g_log_mutex);
-    if (g_log_file.is_open()) {
-        g_log_file.close();
-    }
+namespace protocol {
+    bool SendAll(SOCKET s, const char* data, int length);
+    bool RecvAll(SOCKET s, char* data, int length);
+    bool SendFrame(SOCKET s, const std::string& payload);
+    bool RecvFrame(SOCKET s, std::string& payload, int timeoutMs = 30000);
+    std::string CurrentTimeMs();
+    std::string IsoTimestampUtc();
 }
