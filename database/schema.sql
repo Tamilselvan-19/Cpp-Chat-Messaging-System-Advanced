@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS ChatDatabase;
+USE ChatDatabase;
+
+CREATE TABLE IF NOT EXISTS tbl_UserDetails (
+    UserId VARCHAR(100) NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    IPAddress VARCHAR(100) NULL,
+    Timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (UserId)
+);
+
+CREATE TABLE IF NOT EXISTS tbl_ChatDetails (
+    UniqueId INT AUTO_INCREMENT PRIMARY KEY,
+    UserId VARCHAR(100) NOT NULL,
+    MessageId VARCHAR(255) NOT NULL UNIQUE,
+    Timestamp DATETIME NOT NULL,
+    ChatMessage TEXT NOT NULL,
+    INDEX idx_user_timestamp (UserId, Timestamp)
+);
